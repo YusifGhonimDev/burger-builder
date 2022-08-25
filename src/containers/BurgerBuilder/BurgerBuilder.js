@@ -1,6 +1,8 @@
-import { Fragment, useState } from "react";
+import { useState } from "react";
 import Burger from "../Burger/Burger";
 import BuildControls from "../Burger/BuildControls/BuildControls";
+import Modal from "../../components/UI/Modal/Modal";
+import OrderSummary from "../Burger/OrderSummary/OrderSummary";
 
 const INGREDIENT_PRICES = {
   salad: 0.5,
@@ -21,6 +23,8 @@ const BurgerBuilder = () => {
 
   const [purchasable, setPurchasable] = useState(false);
 
+  const [purchasing, setPurchasing] = useState(false);
+
   const addIngredientHandler = (type) => {
     const ingredientCount = ingredients[type]++;
     setIngredients({ ...ingredients, type: ingredientCount });
@@ -38,6 +42,12 @@ const BurgerBuilder = () => {
     setPurchasable(totalPrice > 4);
   };
 
+  const purchseHandler = () => setPurchasing(true);
+
+  const purchaseCancelHandler = () => setPurchasing(false);
+
+  const purchaseContinueHandler = () => alert("You Continue!");
+
   const disabledInfo = {
     ...ingredients,
   };
@@ -47,16 +57,24 @@ const BurgerBuilder = () => {
   }
 
   return (
-    <Fragment>
+    <>
+      <Modal show={purchasing} modalClosed={purchaseCancelHandler}>
+        <OrderSummary
+          ingredients={ingredients}
+          purchaseCancelled={purchaseCancelHandler}
+          purchaseContinued={purchaseContinueHandler}
+        />
+      </Modal>
       <Burger ingredients={ingredients} />
       <BuildControls
         ingredientAdded={addIngredientHandler}
         ingredientRemoved={removeIngredientHandler}
         disabled={disabledInfo}
         purchasable={purchasable}
+        ordered={purchseHandler}
         price={totalPrice}
       />
-    </Fragment>
+    </>
   );
 };
 
